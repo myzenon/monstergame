@@ -3,6 +3,7 @@ package se301.monstergame.service;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.mongodb.MongoClientURI;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -10,7 +11,6 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.DBAddress;
 import com.mongodb.MongoClient;
 
 import se301.monstergame.model.Monster;
@@ -22,9 +22,12 @@ public class MonsterServiceImpl implements MonsterService {
 
 	static {
 		try {
-			String address = "127.0.0.1:27017";
+			String address = "127.0.0.1";
+			String port = "27017";
 			String dbname = "monstergame";
-			mongoOps = new MongoTemplate(new MongoClient(new DBAddress(address)), dbname);
+			String username = "myzenon";
+			String password = "1234";
+			mongoOps = new MongoTemplate(new MongoClient(new MongoClientURI("mongodb://" + username + ":" + password +  "@" + address + ":" + port + "/" + dbname)), dbname);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			System.out.println("Is MongoDB running ?");

@@ -9,13 +9,15 @@
 	<link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
 
 </head>
-<body ng-app="myApp" class="ng-cloak">
-	<div class="generic-container" ng-controller="MonsterController as ctrl">
+<body ng-class="{'battleModeBG' : ctrl.isBattleState(), 'regModeBG' : ctrl.isState(ctrl.stateVal.REG)}" ng-app="myApp" class="ng-cloak" ng-controller="MonsterController as ctrl">
+	<div class="generic-container">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<span class="lead">Monster Registration Form </span>
+				<span class="lead">{{ ctrl.isState(ctrl.stateVal.REG) ? 'Monster Registration Form' : 'Monster Battle' }} </span>
+				<button ng-show="ctrl.isState(ctrl.stateVal.REG)" ng-click="ctrl.resetBattle()" class="btn btn-danger floatRight">Battle Mode</button>
+				<button ng-show="ctrl.isBattleState()" ng-click="ctrl.setState(ctrl.stateVal.REG)" class="btn btn-primary floatRight">Registration Mode</button>
 			</div>
-			<div class="formcontainer">
+			<div class="formcontainer" ng-show="ctrl.isState(ctrl.stateVal.REG)">
 				<form ng-submit="ctrl.submit()" name="myForm"
 					class="form-horizontal">
 					<input type="hidden" ng-model="ctrl.monster.id" />
@@ -81,6 +83,48 @@
 					</div>
 				</form>
 			</div>
+
+			<div class="panel-notify" ng-bind="ctrl.notify()" ng-show="ctrl.isBattleState()"></div>
+
+			<div class="battlecontainer" class="form-horizontal" ng-show="ctrl.isBattleState()">
+				<form>
+					<div class="tablecontainer">
+						<table class="table">
+							<thead>
+								<tr>
+									<th></th>
+									<th>Name</th>
+									<th>Health</th>
+									<th>Attack</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-class="{'winMonster' : ctrl.isMonsterWin(ctrl.battleMonsters[0]) }">
+									<td style="width: 20%; text-align: right; font-weight: bold;">First Monster</td>
+									<td><span ng-bind="ctrl.battleMonsters[0].monstername"></span></td>
+									<td><span ng-bind="ctrl.battleMonsters[0].health"></span></td>
+									<td><span ng-bind="ctrl.battleMonsters[0].attack"></span></td>
+								</tr>
+								<tr ng-class="{'winMonster' : ctrl.isMonsterWin(ctrl.battleMonsters[1]) }">
+									<td style="text-align: right; font-weight: bold;">Second Monster</td>
+									<td><span ng-bind="ctrl.battleMonsters[1].monstername"></span></td>
+									<td><span ng-bind="ctrl.battleMonsters[1].health"></span></td>
+									<td><span ng-bind="ctrl.battleMonsters[1].attack"></span></td>
+								</tr>
+								<tr>
+									<td colspan="4">
+										<div class="floatRight">
+											<button ng-click="ctrl.battle()" ng-disabled="!ctrl.canBattle()" ng-hide="ctrl.isState(ctrl.stateVal.BATTLE.COMPLETE)" class="btn btn-fight">Fight !!</button>
+											<button ng-click="ctrl.resetBattle()" class="btn btn-success">{{ ctrl.isState(ctrl.stateVal.BATTLE.SELECT) ? 'Reset' : 'Finish' }}</button>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</form>
+			</div>
+
 		</div>
 		<div class="panel panel-default">
 			<!-- Default panel contents -->
@@ -104,11 +148,15 @@
 							<td><span ng-bind="m.monstername"></span></td>
 							<td><span ng-bind="m.health"></span></td>
 							<td><span ng-bind="m.attack"></span></td>
-							<td>
+							<td ng-show="ctrl.isState(ctrl.stateVal.REG)">
 								<button type="button" ng-click="ctrl.edit(m.id)"
 									class="btn btn-success custom-width">Edit</button>
 								<button type="button" ng-click="ctrl.remove(m.id)"
 									class="btn btn-danger custom-width">Remove</button>
+							</td>
+							<td ng-show="ctrl.isBattleState()">
+								<button ng-disabled="ctrl.isState(ctrl.stateVal.BATTLE.COMPLETE)" type="button" ng-hide="ctrl.isSelectedBattle(m)" ng-click="ctrl.selectMonsterBattle(m)" class="btn btn-primary">Select</button>
+								<button ng-disabled="ctrl.isState(ctrl.stateVal.BATTLE.COMPLETE)" type="button" ng-show="ctrl.isSelectedBattle(m)" ng-click="ctrl.deselectMonsterBattle(m)" class="btn btn-primary active">Deselect</button>
 							</td>
 						</tr>
 					</tbody>
@@ -119,6 +167,7 @@
 
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-animate.js"></script>
 	<script src="<c:url value='/static/js/app.js' />"></script>
 	<script src="<c:url value='/static/js/service/monster_service.js' />"></script>
 	<script

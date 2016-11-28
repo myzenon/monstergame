@@ -7,11 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import se301.monstergame.model.Monster;
@@ -121,6 +117,64 @@ public class MonsterRestController {
   
         monsterService.deleteAllMonsters();
         return new ResponseEntity<Monster>(HttpStatus.NO_CONTENT);
+    }
+
+
+    //------------------- Battle Monsters --------------------------------------------------------
+
+    @PostMapping(value = "/monster/battle/")
+    public ResponseEntity<Monster> battleMonster(@RequestBody List<Monster> monsters) {
+
+        Monster monster1 = monsterService.findById(monsters.get(0).getId());
+        if (monster1== null) {
+            System.out.println("Monster with id " + monsters.get(0).getId() + " not found");
+            return new ResponseEntity<Monster>(HttpStatus.NOT_FOUND);
+        }
+
+        Monster monster2 = monsterService.findById(monsters.get(1).getId());
+        if (monster2== null) {
+            System.out.println("Monster with id " + monsters.get(1).getId() + " not found");
+            return new ResponseEntity<Monster>(HttpStatus.NOT_FOUND);
+        }
+
+        Monster firstAtk, secondAtk;
+
+
+        if((((int) Math.random() *2) + 1) == 1) {
+            firstAtk = monster1;
+            secondAtk = monster2;
+        }
+        else {
+            firstAtk = monster2;
+            secondAtk = monster1;
+        }
+        long monster1Health = firstAtk.getHealth();
+        long monster2Health = secondAtk.getHealth();
+
+        while(true) {
+            monster2Health -= firstAtk.getAttack();
+            System.out.println(firstAtk.getMonstername() + " Attack " + secondAtk.getMonstername() + " | Health : " + monster2Health);
+            if(monster2Health <= 0) {
+                monster2Health = 0;
+                break;
+            }
+            monster1Health -= secondAtk.getAttack();
+            System.out.println(secondAtk.getMonstername() + " Attack " + firstAtk.getMonstername() + " | Health : " + monster1Health);
+            if(monster1Health <= 0) {
+                monster1Health = 0;
+                break;
+            }
+        }
+
+        Monster winMonster;
+        if(monster1Health == 0) {
+            winMonster = secondAtk;
+        }
+        else {
+            winMonster = firstAtk;
+        }
+
+        return new ResponseEntity<Monster>(winMonster, HttpStatus.OK);
     }
   
 }

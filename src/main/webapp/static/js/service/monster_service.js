@@ -54,6 +54,19 @@ App.factory('MonsterService', ['$http', '$q', function($http, $q){
                                     return $q.reject(errResponse);
                                 }
             			);
+            },
+
+            battle : function(monsters) {
+                return $http.post('http://localhost:8080/monstergame/monster/battle/', monsters)
+                    .then(
+                        function(response){
+                            return response.data;
+                        },
+                        function(errResponse){
+                            console.error('Error while battle monster');
+                            return $q.reject(errResponse);
+                        }
+                    );
             }
          
     };
