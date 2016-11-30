@@ -9,6 +9,8 @@ public class Monster {
     private long health;
      
     private long attack;
+
+    private String species;
      
     public Monster(){
     }
@@ -51,7 +53,15 @@ public class Monster {
     public void setAttack(long attack) {
         this.attack = attack;
     }
- 
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

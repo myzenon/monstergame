@@ -3,6 +3,7 @@ package se301.monstergame.service;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.mongodb.DBAddress;
 import com.mongodb.MongoClientURI;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -20,6 +21,7 @@ public class MonsterServiceImpl implements MonsterService {
 
 	private static MongoOperations mongoOps;
 
+	// Add the auth authentication to access the database. Option : 9
 	static {
 		try {
 			String address = "127.0.0.1";
@@ -28,6 +30,7 @@ public class MonsterServiceImpl implements MonsterService {
 			String username = "myzenon";
 			String password = "1234";
 			mongoOps = new MongoTemplate(new MongoClient(new MongoClientURI("mongodb://" + username + ":" + password +  "@" + address + ":" + port + "/" + dbname)), dbname);
+//			mongoOps = new MongoTemplate(new MongoClient(new DBAddress(address + ":" + port)), dbname);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			System.out.println("Is MongoDB running ?");
@@ -67,9 +70,6 @@ public class MonsterServiceImpl implements MonsterService {
 	}
 
 	public void updateMonster(Monster monster) {
-		// Save is an "upsert" 
-		//   ->if monster id does not exist, it will insert.
-		//   ->if monster id does exist, it will update it.
 		mongoOps.save(monster);
 	}
 

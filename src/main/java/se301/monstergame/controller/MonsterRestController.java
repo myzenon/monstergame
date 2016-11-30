@@ -120,7 +120,7 @@ public class MonsterRestController {
     }
 
 
-    //------------------- Battle Monsters --------------------------------------------------------
+    //------------------- Battle Monsters : Option 1 -------------------------------------------------
 
     @PostMapping(value = "/monster/battle/")
     public ResponseEntity<Monster> battleMonster(@RequestBody List<Monster> monsters) {
